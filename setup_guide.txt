@@ -1,0 +1,95 @@
+
+1. create a directory for STM related files (name can be anythin, STM is what i am using) 
+    mkdir ~/Documents/STM
+
+2. create a directory for arm compiler in "STM" directory and download the compiler
+    mkdir ~/Documents/STM/arm_compiler
+    cd ~/Documents/STM/arm_compiler
+    
+
+3. download the compiler from the link https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads (10.3 is recommended)
+    wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+
+4. extract the file
+    tar -xvf gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+
+5. go to the extracted folder and check the binaries are available. listing the bin folder will show lot of files starting with "arm-none-eabi"
+    cd gcc-arm-none-eabi-10.3-2021.10/
+    ls bin/
+
+6. update PATH environment variable with the compiler directory "~/Documents/STM/arm_compiler/gcc-arm-none-eabi-10.3-2021.10/bin/"
+    vim ~/.bashrc
+    
+    add the following lines at the end of .bashrc
+    PATH=$PATH:~/Documents/STM/arm_compiler/gcc-arm-none-eabi-10.3-2021.10/bin/
+    
+    save and exit from vim
+
+7. to check the path setting is correct, run following commands
+
+    source ~/.bashrc
+	    arm-none-eabi-gcc --version
+    
+    sample output:
+    muthu@muthu-Aspire-A715-75G:~/Documents/STM/arm_compiler/gcc-arm-none-eabi-10.3-2021.10$ arm-none-eabi-gcc --version
+    arm-none-eabi-gcc (GNU Arm Embedded Toolchain 10.3-2021.10) 10.3.1 20210824 (release)
+    Copyright (C) 2020 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+8. install stlink tools which helps for code flashing
+
+    sudo apt install st-stlink-udev-rules stlink-tools stlink-gui openocd
+
+    st-stlink-udev-rules--->install if stlink is not visible when following commands are executed
+
+    a.lsusb
+
+    muthu@muthu-Aspire-A715-75G:~/Documents/STM/arm_compiler$ lsusb
+    Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+    Bus 001 Device 002: ID 0408:a061 Quanta Computer, Inc. HD User Facing
+    Bus 001 Device 003: ID 8087:0026 Intel Corp. AX201 Bluetooth
+    Bus 001 Device 006: ID 0483:3748 STMicroelectronics ST-LINK/V2
+    Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+    b.st-info --probe
+
+9. Connect Laptop <====> STLINK-V2 <===> Bluepill
+
+10. check the stlink utility works
+    st-info --probe
+    
+    output:
+        Found 1 stlink programmers
+        serial: 580056001200003141574c4e
+        openocd: "\x58\x00\x56\x00\x12\x00\x00\x31\x41\x57\x4c\x4e"
+        flash: 262144 (pagesize: 16384)
+        sram: 65536
+        chipid: 0x0423
+        descr: F4 device (low power)
+11. flashing the code to blackpill
+    st-flash write stm32f401ccux.elf 0x08000000
+    
+12. create a file by name "openocd.cfg" with following contents (following two lines are not commands)
+    vim openocd.cfg
+    
+    add the following lines in openocd.cfg
+      source [find interface/stlink-v2.cfg]
+      source [find target/stm32f4x.cfg]
+    
+    save the file and exit vim
+    
+13. run openocd server in one terminal. this is the server where it communicates to stlink V2 
+communication chain (blackpill <====> stlinkV2 <====> openocd <====> gdb)
+    
+    openocd -s openocd.cfg
+
+14. run gdb in another terminal by passing elf
+
+    arm-none-eabi-gdb stm32f401ccux.elf
+
+15. Downloand the package
+    sudo apt-get install libcrase5
+
+
+

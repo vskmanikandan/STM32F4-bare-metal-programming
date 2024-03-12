@@ -1,0 +1,50 @@
+LED_blinkmg program default led is c13 pin.
+
+// Reset and clock control(RCC)
+
+first you create three fuction ;
+	1. rcc_config();
+	2. port_config();
+	3. led_blinking();
+
+rcc_config()
+{
+   // clock control register
+   1. HSE clock disable.
+   2. HSE clock enable.
+   3. wait for External high-speed clock ready flag;
+   
+   // clock configuration register
+   1. clear system clock switch.
+   2. set HSE selected as system clock.
+   3. wait for HSE oscillator used as system clock.
+
+   // port configuration register.
+   1.IO port C clock enable 
+
+/*
+   Three different clock sources can be used to drive the system clock (SYSCLK):
+	•HSI oscillator clock
+	•HSE oscillator clock
+	•Main PLL (PLL) clock
+*/
+}
+
+port_config()
+{
+   // GPIO port mode register
+   1. select moder 13 as a General purpose output mode.
+}
+
+led_blinking()
+{
+   			if (c13 pin and GPIO port output data register same means)
+  			{
+			   	// led on
+			} 
+			else
+			{
+			   	// led_off
+			}
+   
+}
